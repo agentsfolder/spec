@@ -4,7 +4,7 @@ Intended status: Standard
 The .agents Repository Folder Specification (AGENTS-1)
 Canonical Agent Configuration, Modes, Policies, and Skills
 
-Abstract
+## Abstract
 
 This document specifies a standardized repository directory, “.agents/”,
 that provides a canonical, agent-agnostic configuration model for AI coding
@@ -14,7 +14,7 @@ designed to enable interoperability across multiple agent implementations by
 establishing a single canonical source-of-truth for project agent guidance,
 safety policy, and tool/skill definitions.
 
-Status of This Document
+## Status of This Document
 
 This document is a work in progress. It may be updated, replaced, or
 obsoleted by other documents at any time. It is inappropriate to treat this
@@ -25,35 +25,36 @@ Copyright Notice
 Copyright (c) 2026. All rights reserved.
 
 Table of Contents
-	1.	Introduction
-	2.	Conventions and Requirements Language
-	3.	Terminology
-	4.	Design Goals and Non-Goals
-	5.	Repository Structure
-	6.	Identifiers, Versioning, and Compatibility
-	7.	Canonical Data Model
-	8.	File Formats
+1.	Introduction
+2.	Conventions and Requirements Language
+3.	Terminology
+4.	Design Goals and Non-Goals
+5.	Repository Structure
+6.	Identifiers, Versioning, and Compatibility
+7.	Canonical Data Model
+8.	File Formats
 8.1.  manifest.yaml
 8.2.  prompts/*
 8.3.  modes/.md (Front Matter)
 8.4.  policies/.yaml
-8.5.  skills//skill.yaml
+8.5.  skills/**/skill.yaml
 8.6.  scopes/.yaml
 8.7.  profiles/.yaml
 8.8.  state/state.yaml
 8.9.  schemas/
-	9.	Resolution Algorithm
+9.	Resolution Algorithm
 9.1.  Inputs
 9.2.  Precedence
 9.3.  Merging Rules
 9.4.  Scope Matching
 9.5.  Conflict Handling
-	10.	Determinism Requirements
-	11.	Security Considerations
-	12.	Privacy Considerations
-	13.	Registry Considerations
-	14.	References
-	15.	Introduction
+10.	Determinism Requirements
+11.	Security Considerations
+12.	Privacy Considerations
+13.	Registry Considerations
+14.	References
+
+# Introduction
 
 AI coding agents vary in how they discover repository instructions,
 configuration, permissions, and tooling integration. Many ecosystems employ
@@ -65,13 +66,15 @@ single canonical source-of-truth for agent-related project guidance, safety
 policy, and tool/skill definitions. The folder is intended to be consumed by
 tools and agents directly or via auxiliary tooling, without requiring each
 agent to define a bespoke repository structure.
-	2.	Conventions and Requirements Language
+
+# Conventions and Requirements Language
 
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,
 “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and
 “OPTIONAL” in this document are to be interpreted as described in RFC 2119
 and RFC 8174 when, and only when, they appear in all capitals.
-	3.	Terminology
+
+# Terminology
 
 Canonical Configuration:
 The effective configuration computed from “.agents/” inputs using the
@@ -99,7 +102,8 @@ State:
 A local, non-committed selection of mode/profile/backend and other
 convenience choices for developer UX. State is advisory and does not
 change canonical repository configuration.
-	4.	Design Goals and Non-Goals
+
+# Design Goals and Non-Goals
 
 4.1.  Goals
 	•	Interoperability: Repositories can define agent configuration once in a
@@ -120,7 +124,7 @@ alternative configurations for specific agents.
 	•	This specification does not require automatic reverse synchronization from
 non-canonical artifacts into canonical configuration.
 
-	5.	Repository Structure
+# Repository Structure
 
 5.1.  Required Layout
 
@@ -149,7 +153,8 @@ Canonical source files are those within “.agents/” excluding “schemas/” 
 “state/state.yaml”. Tools MAY generate or update schema files under
 “.agents/schemas/” but MUST NOT modify canonical sources unless explicitly
 requested by a user.
-	6.	Identifiers, Versioning, and Compatibility
+
+# Identifiers, Versioning, and Compatibility
 
 6.1.  specVersion
 
@@ -170,7 +175,8 @@ Case sensitivity SHOULD be treated as significant.
 Unknown fields in “x” namespaces (Section 7.5) MUST be preserved during
 processing. Unknown top-level fields outside “x” namespaces MUST cause
 validation failure unless explicitly allowed by the schema version in use.
-	7.	Canonical Data Model
+
+# Canonical Data Model
 
 7.1.  Components
 
@@ -210,7 +216,8 @@ Scopes provide path-based overrides. Scopes MUST NOT redefine specVersion.
 
 Any component MAY include an “x” object permitting arbitrary key/value
 extensions. Extension keys SHOULD be vendor-namespaced (e.g., “x.vendor.*”).
-	8.	File Formats
+
+# File Formats
 
 8.0.  General Requirements
 
@@ -310,7 +317,8 @@ canonical options.
 “.agents/schemas/” contains JSON Schema definitions used by validation.
 Tooling MAY generate these files. If present, schemas MUST correspond to the
 specVersion declared in manifest.yaml.
-	9.	Resolution Algorithm
+
+# Resolution Algorithm
 
 9.1.  Inputs
 
@@ -355,7 +363,8 @@ If “resolution.onConflict” is “error” (default), ambiguous references (e
 unknown mode id, unknown policy id, duplicate skill id definitions) MUST fail
 validation and MUST prevent use of the configuration. If “warn”, tooling MAY
 proceed but MUST produce a machine-readable warning report.
-	10.	Determinism Requirements
+
+# Determinism Requirements
 
 Conforming tooling MUST:
 	•	compute identical canonical configuration for identical inputs
@@ -364,7 +373,7 @@ meaningful
 	•	serialize JSON and YAML deterministically when producing derived views
 (if any), even though such views are outside the scope of this document
 
-	11.	Security Considerations
+# Security Considerations
 
 The “.agents” model can declare capabilities to agents (execution, network
 access, file writes). Tools SHOULD:
@@ -375,29 +384,17 @@ prompts or logs
 	•	treat user overlays as potentially sensitive and avoid writing secrets into
 repository-scoped guidance unless explicitly configured
 
-	12.	Privacy Considerations
+# Privacy Considerations
 
 Tools should avoid collecting or transmitting repository contents unless
 explicitly requested. If telemetry exists, it MUST be opt-in and MUST NOT
 include source content by default.
-	13.	Registry Considerations
+
+# Registry Considerations
 
 This specification does not define a public registry for skills/plugins.
 Tools MAY implement private registries or distribution mechanisms; such
 mechanisms are out of scope.
-	14.	References
 
-[RFC2119]  Bradner, S., “Key words for use in RFCs to Indicate Requirement
-Levels”, RFC 2119, March 1997.
-
-[RFC8174]  Leiba, B., “Ambiguity of Uppercase vs Lowercase in RFC 2119 Key
-Words”, RFC 8174, May 2017.
-
-[JSON-SCHEMA]
-“JSON Schema: A Media Type for Describing JSON Documents”,
-Draft 2020-12.
-
-[YAML12]   “YAML Ain’t Markup Language (YAML) Version 1.2”.
-
-[COMMONMARK]
-“CommonMark Specification”.
+# References
+TODO: fix references
