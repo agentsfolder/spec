@@ -24,40 +24,6 @@ This document is a work in progress. It may be updated, replaced, or
 obsoleted by other documents at any time. It is inappropriate to treat this
 document as final unless marked as such by the publishers.
 
-Copyright Notice
-
-Copyright (c) 2026. All rights reserved.
-
-Table of Contents
-1.	Introduction
-2.	Conventions and Requirements Language
-3.	Terminology
-4.	Design Goals and Non-Goals
-5.	Repository Structure
-6.	Identifiers, Versioning, and Compatibility
-7.	Canonical Data Model
-8.	File Formats
-8.1.  manifest.yaml
-8.2.  prompts/*
-8.3.  modes/.md (Front Matter)
-8.4.  policies/.yaml
-8.5.  skills/**/skill.yaml
-8.6.  scopes/.yaml
-8.7.  profiles/.yaml
-8.8.  state/state.yaml
-8.9.  schemas/
-9.	Resolution Algorithm
-9.1.  Inputs
-9.2.  Precedence
-9.3.  Merging Rules
-9.4.  Scope Matching
-9.5.  Conflict Handling
-10.	Determinism Requirements
-11.	Security Considerations
-12.	Privacy Considerations
-13.	Registry Considerations
-14.	References
-
 # Introduction
 
 AI coding agents vary in how they discover repository instructions,
@@ -93,8 +59,7 @@ A declarative set of constraints and safety gates (filesystem, exec,
 network, redaction, confirmations, limits).
 
 Skill:
-A declared tool or harness capability. Skills may be instruction-only,
-MCP-provided tools, or CLI shims.
+A declared tool or harness capability. Skills MUST follow the [Agent Skills specification](https://agentskills.io/specification).
 
 Scope:
 A set of overrides applying to matching repository paths.
