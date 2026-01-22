@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="agents-folder.PNG" alt="(dot)agents folder logo" width="500"/>
+</p>
+
 # .agents Specification
 Intended status: Standard                                        
 
