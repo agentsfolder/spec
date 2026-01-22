@@ -24,7 +24,7 @@ This document is a work in progress. It may be updated, replaced, or
 obsoleted by other documents at any time. It is inappropriate to treat this
 document as final unless marked as such by the publishers.
 
-# Introduction
+## Introduction
 
 AI coding agents vary in how they discover repository instructions,
 configuration, permissions, and tooling integration. Many ecosystems employ
@@ -37,44 +37,44 @@ policy, and tool/skill definitions. The folder is intended to be consumed by
 tools and agents directly or via auxiliary tooling, without requiring each
 agent to define a bespoke repository structure.
 
-# Conventions and Requirements Language
+## Conventions and Requirements Language
 
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”,
 “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “NOT RECOMMENDED”, “MAY”, and
 “OPTIONAL” in this document are to be interpreted as described in RFC 2119
 and RFC 8174 when, and only when, they appear in all capitals.
 
-# Terminology
+## Terminology
 
-Canonical Configuration:
+### Canonical Configuration:
 The effective configuration computed from “.agents/” inputs using the
 resolution algorithm in Section 9.
 
-Mode:
+### Mode:
 A named behavior profile that composes prompts, binds a policy, and
 enables/disables skills.
 
-Policy:
+### Policy:
 A declarative set of constraints and safety gates (filesystem, exec,
 network, redaction, confirmations, limits).
 
-Skill:
+### Skill:
 A declared tool or harness capability. Skills MUST follow the [Agent Skills specification](https://agentskills.io/specification).
 
-Scope:
+### Scope:
 A set of overrides applying to matching repository paths.
 
-Profile:
+### Profile:
 A named overlay (e.g., “dev”, “ci”) that modifies canonical configuration.
 
-State:
+### State:
 A local, non-committed selection of mode/profile/backend and other
 convenience choices for developer UX. State is advisory and does not
 change canonical repository configuration.
 
-# Design Goals and Non-Goals
+## Design Goals and Non-Goals
 
-4.1.  Goals
+### Goals
 	•	Interoperability: Repositories can define agent configuration once in a
 canonical location.
 	•	Determinism: Given the same inputs, the computed canonical configuration
@@ -85,7 +85,7 @@ configuration folders.
 derived from inputs.
 	•	Extensibility: The model supports vendor extensions without forking.
 
-4.2.  Non-Goals
+### Non-Goals
 	•	This specification does not mandate any particular agent runtime or tool.
 	•	This specification does not define how tools should emulate or render
 alternative configurations for specific agents.
@@ -93,9 +93,9 @@ alternative configurations for specific agents.
 	•	This specification does not require automatic reverse synchronization from
 non-canonical artifacts into canonical configuration.
 
-# Repository Structure
+## Repository Structure
 
-5.1.  Required Layout
+### Required Layout
 
 A repository implementing this specification MUST include a directory named
 “.agents” at repository root.
@@ -113,7 +113,7 @@ profiles/                      ; REQUIRED (MAY be empty)
 schemas/                       ; REQUIRED (MAY be generated)
 state/                         ; REQUIRED
 
-5.2.  State and Version Control
+### State and Version Control
 
 The “state/” directory MUST contain a “.gitignore” entry excluding
 “state.yaml” from version control.
@@ -123,14 +123,14 @@ Canonical source files are those within “.agents/” excluding “schemas/” 
 “.agents/schemas/” but MUST NOT modify canonical sources unless explicitly
 requested by a user.
 
-# Identifiers, Versioning, and Compatibility
+## Identifiers, Versioning, and Compatibility
 
-6.1.  specVersion
+### specVersion
 
 The manifest MUST declare a “specVersion” string. The versioning scheme
 SHOULD follow Semantic Versioning (SemVer).
 
-6.2.  IDs
+### IDs
 
 Mode IDs, Policy IDs, Skill IDs, Scope IDs, and Profile IDs MUST be stable
 identifiers. Implementations SHOULD restrict IDs to the following pattern:
@@ -139,15 +139,15 @@ id = ALPHA / DIGIT *( ALPHA / DIGIT / “.” / “_” / “-” )
 
 Case sensitivity SHOULD be treated as significant.
 
-6.3.  Forward Compatibility
+### Forward Compatibility
 
-Unknown fields in “x” namespaces (Section 7.5) MUST be preserved during
+Unknown fields in “x” namespaces MUST be preserved during
 processing. Unknown top-level fields outside “x” namespaces MUST cause
 validation failure unless explicitly allowed by the schema version in use.
 
-# Canonical Data Model
+## Canonical Data Model
 
-7.1.  Components
+### Components
 
 Canonical configuration comprises:
 	•	Effective Mode
@@ -157,7 +157,7 @@ Canonical configuration comprises:
 	•	Matched Scopes
 	•	Active Profile
 
-7.2.  Policy Semantics
+### Policy Semantics
 
 Policy is a set of constraints. Where enforcement is feasible, tooling SHOULD
 enforce; otherwise tooling MUST represent policy as explicit guidance.
@@ -167,7 +167,7 @@ enforce; otherwise tooling MUST represent policy as explicit guidance.
 	•	denied hosts vs allowed hosts
 	•	denied commands vs allowed commands
 
-7.3.  Skill Activation
+### Skill Activation
 
 Skills MUST declare one activation mode:
 	•	instruction_only
@@ -177,23 +177,23 @@ Skills MUST declare one activation mode:
 Tooling that executes or exposes skills MUST define the operational meaning
 of activation. This document only standardizes the declaration.
 
-7.4.  Scopes
+### Scopes
 
 Scopes provide path-based overrides. Scopes MUST NOT redefine specVersion.
 
-7.5.  Extensions
+### Extensions
 
 Any component MAY include an “x” object permitting arbitrary key/value
 extensions. Extension keys SHOULD be vendor-namespaced (e.g., “x.vendor.*”).
 
-# File Formats
+## File Formats
 
-8.0.  General Requirements
+### General Requirements
 
 Canonical configuration files MUST be encoded in UTF-8. YAML files SHOULD be
 YAML 1.2. Markdown files SHOULD be CommonMark compliant.
 
-8.1.  manifest.yaml
+### manifest.yaml
 
 The manifest file MUST exist at “.agents/manifest.yaml” and MUST include:
 	•	specVersion (string)
@@ -206,7 +206,7 @@ The manifest MAY include:
 	•	profiles map (optional)
 	•	x extensions
 
-8.2.  prompts/*
+### prompts/*
 
 The “prompts/” directory MUST exist and MUST contain:
 	•	base.md        ; REQUIRED
@@ -216,7 +216,7 @@ The “prompts/” directory MUST exist and MUST contain:
 Prompt files MUST be Markdown. Tools SHOULD treat the content as plain text
 instructions to be composed by modes and scopes.
 
-8.3.  modes/*.md (Front Matter)
+### modes/*.md (Front Matter)
 
 Each mode MUST be a Markdown file in “.agents/modes/”. A mode file MAY include
 YAML front matter. If present, it MUST validate against the Mode Front Matter
@@ -230,7 +230,7 @@ schema and SHOULD include:
 
 The Markdown body MUST represent human-readable instructions for that mode.
 
-8.4.  policies/*.yaml
+### policies/*.yaml
 
 Each policy file MUST include:
 	•	id
@@ -241,9 +241,9 @@ Each policy file MUST include:
 	•	limits (optional)
 	•	x (optional)
 
-8.5.  skills/*/skill.yaml
+### skills/*/SKILL.yaml
 
-Each skill MUST reside in “.agents/skills//skill.yaml” and include:
+Each skill MUST reside in “.agents/skills/*/SKILL.yaml” and include:
 	•	id, version, title, description
 	•	activation
 	•	interface (type, entrypoint, args/env optional)
@@ -253,7 +253,7 @@ Each skill MUST reside in “.agents/skills//skill.yaml” and include:
 	•	compatibility (optional)
 	•	x (optional)
 
-8.6.  scopes/*.yaml
+### scopes/*.yaml
 
 Each scope file MUST include:
 	•	id
@@ -264,13 +264,13 @@ Scope patterns MUST use doublestar (”**”) glob semantics consistent across
 tooling. If the implementation uses a different glob engine, it MUST document
 any deviations.
 
-8.7.  profiles/*.yaml
+### profiles/*.yaml
 
 Profiles are named overlays. Profile files SHOULD define overrides that merge
 into the canonical configuration. The overlay shape MUST be deterministic and
 validated by schema.
 
-8.8.  state/state.yaml
+### state/state.yaml
 
 “.agents/state/state.yaml” is OPTIONAL and MUST be excluded from version
 control. If present, it MUST include at least:
@@ -281,15 +281,15 @@ and MAY include:
 State MUST NOT change canonical configuration; it only selects among defined
 canonical options.
 
-8.9.  schemas/*
+### schemas/*
 
 “.agents/schemas/” contains JSON Schema definitions used by validation.
 Tooling MAY generate these files. If present, schemas MUST correspond to the
 specVersion declared in manifest.yaml.
 
-# Resolution Algorithm
+## Resolution Algorithm
 
-9.1.  Inputs
+### Inputs
 
 The resolution algorithm consumes:
 	•	Repo canonical inputs under “.agents/”
@@ -297,7 +297,7 @@ The resolution algorithm consumes:
 	•	Optional state selection (”.agents/state/state.yaml”)
 	•	Tool and CLI overrides (implementation-specific; treated as highest priority)
 
-9.2.  Precedence
+### Precedence
 
 Effective configuration MUST be computed in the following order (highest
 priority first):
@@ -309,7 +309,7 @@ priority first):
 If a state selection is present, it MAY be used to choose a mode/profile
 within the canonical configuration, but MUST NOT override canonical values.
 
-9.3.  Merging Rules
+### Merging Rules
 
 Merging MUST be deterministic and MUST preserve stable ordering.
 	•	Scalars: higher precedence overwrites lower precedence.
@@ -318,7 +318,7 @@ replace-only by schema for that field.
 	•	Policies: deny lists MUST override allow lists.
 	•	Unknown “x” extensions: MUST be preserved and merged by deep-merge.
 
-9.4.  Scope Matching
+### Scope Matching
 
 A scope matches a repository path if any applyTo glob matches. If multiple
 scopes match, implementations MUST choose the most specific scope using a
@@ -326,14 +326,14 @@ deterministic specificity metric. If specificity ties, “priority” (if
 present) MUST break ties; remaining ties MUST be resolved by lexicographic
 order of scope id.
 
-9.5.  Conflict Handling
+### Conflict Handling
 
 If “resolution.onConflict” is “error” (default), ambiguous references (e.g.,
 unknown mode id, unknown policy id, duplicate skill id definitions) MUST fail
 validation and MUST prevent use of the configuration. If “warn”, tooling MAY
 proceed but MUST produce a machine-readable warning report.
 
-# Determinism Requirements
+## Determinism Requirements
 
 Conforming tooling MUST:
 	•	compute identical canonical configuration for identical inputs
@@ -342,7 +342,7 @@ meaningful
 	•	serialize JSON and YAML deterministically when producing derived views
 (if any), even though such views are outside the scope of this document
 
-# Security Considerations
+## Security Considerations
 
 The “.agents” model can declare capabilities to agents (execution, network
 access, file writes). Tools SHOULD:
@@ -353,17 +353,17 @@ prompts or logs
 	•	treat user overlays as potentially sensitive and avoid writing secrets into
 repository-scoped guidance unless explicitly configured
 
-# Privacy Considerations
+## Privacy Considerations
 
 Tools should avoid collecting or transmitting repository contents unless
 explicitly requested. If telemetry exists, it MUST be opt-in and MUST NOT
 include source content by default.
 
-# Registry Considerations
+## Registry Considerations
 
 This specification does not define a public registry for skills/plugins.
 Tools MAY implement private registries or distribution mechanisms; such
 mechanisms are out of scope.
 
-# References
+## References
 TODO: fix references
